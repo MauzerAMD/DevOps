@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  build-service:
+    build: 
+      context: ./build-service
+      dockerfile: Dockerfile
+    container_name: app-builder
+    volumes:
+      - build-artifacts:/output
+    networks:
+      - app-network
+    restart: "no"
+
+  prod-service:
+    build:
+      context: ./prod-service
+      dockerfile: Dockerfile
+    container_name: app-prod
+    ports:
+      - "8080:8080"
+    volumes:
+      - build-artifacts:/input
+    networks:
+      - app-network
+    depends_on:
+      - build-service
+    restart: unless-stopped
+
+volumes:
+  build-artifacts:
+
+networks:
+  app-network:
+    driver: bridge
