@@ -31,7 +31,7 @@
     - name: Deploy WAR to Tomcat
       copy:
         src: /tmp/hello-app/target/hello-1.0.war
-        dest: /var/lib/tomcat9/webapps/ROOT.war
+        dest: /var/lib/tomcat9/webapps/hello.war
         owner: tomcat
         group: tomcat
         mode: '0644'
