@@ -1,5 +1,5 @@
 ---
-- name: Deploy https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+- name: Deploy boxfuse app
   hosts: all
   become: yes
 
