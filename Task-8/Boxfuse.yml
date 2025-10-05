@@ -1,0 +1,49 @@
+---
+- name: Deploy https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - git
+          - maven
+          - default-jdk
+          - tomcat9
+          - tomcat9-admin
+        state: present
+
+    - name: Clone application repository
+      git:
+        repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+        dest: /tmp/hello-app
+
+    - name: Build WAR with Maven
+      command: mvn package
+      args:
+        chdir: /tmp/hello-app
+
+    - name: Deploy WAR to Tomcat
+      copy:
+        src: /tmp/hello-app/target/hello-1.0.war
+        dest: /var/lib/tomcat9/webapps/ROOT.war
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+        remote_src: yes
+
+    - name: Ensure Tomcat is running
+      systemd:
+        name: tomcat9
+        state: started
+        enabled: yes
+
+    - name: Wait for Tomcat to deploy app
+      wait_for:
+        port: 8080
+        timeout: 60
